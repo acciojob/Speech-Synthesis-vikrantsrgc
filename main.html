@@ -36,7 +36,60 @@
   const speakButton = document.querySelector('#speak');
   const stopButton = document.querySelector('#stop');
 
-  //Your code goes here
+  // Populate voices list
+  function populateVoices() {
+    voices = speechSynthesis.getVoices();
+    voicesDropdown.innerHTML = voices.map(voice => 
+      `<option value="${voice.name}">${voice.name}</option>`
+    ).join('');
+  }
+
+  // Set default voice and text settings
+  function setUp() {
+    populateVoices();
+
+    // Set the default voice and rate/pitch
+    msg.voice = voices[0];
+    msg.rate = 1;
+    msg.pitch = 1;
+
+    // Set up the rate and pitch sliders
+    document.querySelector('[name="rate"]').addEventListener('input', event => {
+      msg.rate = event.target.value;
+    });
+
+    document.querySelector('[name="pitch"]').addEventListener('input', event => {
+      msg.pitch = event.target.value;
+    });
+
+    document.querySelector('[name="text"]').addEventListener('input', event => {
+      msg.text = event.target.value;
+    });
+
+    voicesDropdown.addEventListener('change', event => {
+      msg.voice = voices.find(voice => voice.name === event.target.value);
+    });
+  }
+
+  // Speak function
+  function speak() {
+    if (msg.text === '') return;
+
+    speechSynthesis.speak(msg);
+  }
+
+  // Stop function
+  function stop() {
+    speechSynthesis.cancel();
+  }
+
+  // Event listeners for speak and stop buttons
+  speakButton.addEventListener('click', speak);
+  stopButton.addEventListener('click', stop);
+
+  // Wait until voices are loaded and setup the interface
+  speechSynthesis.onvoiceschanged = setUp;
+
 </script>
 
 </body>
